@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Produto | Damas Acessórios{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-6 py-12">
+    <div class="mb-10 animate-on-scroll fade-in">
+        <a href="{{ url_for('admin') }}"
+            class="group inline-flex items-center gap-2 text-[10px] font-bold text-[#3C9AAE] uppercase tracking-[0.2em] mb-4 hover:translate-x-[-4px] transition-transform">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m15 18-6-6 6-6" />
+            </svg>
+            Voltar ao Painel
+        </a>
+        <h1 class="text-4xl font-serif font-black text-[#2B7A8F]">Editar Produto</h1>
+    </div>
+
+    <div class="bg-white p-8 md:p-12 rounded-2xl border border-gray-100 shadow-sm animate-on-scroll fade-in">
+        <form action="{{ url_for('editar', id=p.id) }}" method="POST" class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Nome da
+                        Peca</label>
+                    <input type="text" name="nome" value="{{ p.nome }}"
+                        class="w-full p-4 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-[#3C9AAE] transition font-medium"
+                        required>
+                </div>
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label
+                            class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Categoria</label>
+                        <select name="categoria_id" id="categoria_select"
+                            class="w-full p-4 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-[#3C9AAE] transition font-medium"
+                            onchange="atualizarSubcategorias(null)">
+                            <option value="">Selecionar...</option>
+                            {% for cat in categorias %}
+                            <option value="{{ cat.id }}" {% if p.categoria_id==cat.id %}selected{% endif %}>{{ cat.nome
+                                }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Subcategoria</label>
+                        <select name="subcategoria_id" id="subcategoria_select"
+                            class="w-full p-4 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-[#3C9AAE] transition font-medium disabled:opacity-50">
+                            <option value="">Selecionar...</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Preco
+                        (R$)</label>
+                    <input type="text" name="preco" value="{{ '%.2f'|format(p.preco)|replace('.', ',') }}"
+                        class="w-full p-4 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-[#3C9AAE] transition font-medium"
+                        required>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Descricao
+                        Curta</label>
+                    <textarea name="descricao_curta"
+                        class="w-full p-4 bg-gray-50 border-none rounded-xl h-24 focus:ring-2 focus:ring-[#3C9AAE] transition font-medium">{{ p.descricao or '' }}</textarea>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Descricao
+                        Detalhada</label>
+                    <textarea name="descricao_longa"
+                        class="w-full p-4 bg-gray-50 border-none rounded-xl h-24 focus:ring-2 focus:ring-[#3C9AAE] transition font-medium">{{ p.descricao_longa or '' }}</textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    {% for i in range(1, 5) %}
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Foto {{
+                            i }}</label>
+                        <input type="text" name="imagem_{{ i }}" value="{{ imgs[i-1] }}"
+                            class="w-full p-3 bg-gray-50 border-none rounded-xl text-[11px] focus:ring-2 focus:ring-[#3C9AAE] transition">
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Vídeo YT / ML</label>
+                        <input type="text" name="video_url" value="{{ p.video_url or '' }}"
+                            class="w-full p-3 bg-gray-50 border-none rounded-xl text-[11px] focus:ring-2 focus:ring-[#3C9AAE] transition">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Mercado
+                            Livre</label>
+                        <input type="text" name="link_mercadolivre" value="{{ p.link_mercadolivre or '' }}"
+                            class="w-full p-3 bg-gray-50 border-none rounded-xl text-[11px] focus:ring-2 focus:ring-[#3C9AAE] transition">
+                    </div>
+                    <div>
+                        <label
+                            class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">WhatsApp</label>
+                        <input type="text" name="whatsapp" value="{{ p.whatsapp or '' }}"
+                            class="w-full p-3 bg-gray-50 border-none rounded-xl text-[11px] focus:ring-2 focus:ring-[#3C9AAE] transition">
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 pt-4">
+                <button type="submit"
+                    class="jewel-shine w-full bg-[#3C9AAE] text-white py-5 rounded-xl text-[11px] font-bold uppercase tracking-[0.4em] transition hover:bg-[#2B7A8F] shadow-xl shadow-[#3C9AAE]/20">
+                    Salvar Alteracoes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+    input::placeholder,
+    textarea::placeholder {
+        color: #CBD5E1;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: normal;
+    }
+</style>
+    <!-- DATA INJECTION (Safe for IDE Linter) -->
+    <script id="categories-data" type="application/json">
+        {
+            {% for cat in categorias %}
+            "{{ cat.id }}": {
+                "ids": {{ cat.subcategorias | map(attribute='id') | list | tojson }},
+                "nomes": {{ cat.subcategorias | map(attribute='nome') | list | tojson }}
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        }
+    </script>
+    <div id="page-metadata" data-current-sub-id="{{ (p.subcategoria_id or 0) | tojson | e }}"></div>
+    <script>
+        const subcatData = JSON.parse(document.getElementById('categories-data').textContent);
+        const subId = JSON.parse(document.getElementById('page-metadata').getAttribute('data-current-sub-id'));
+
+        function atualizarSubcategorias(preSelectedSubId) {
+            var catId = document.getElementById('categoria_select').value;
+            var subSelect = document.getElementById('subcategoria_select');
+            subSelect.innerHTML = '<option value="">Selecionar...</option>';
+
+            var data = subcatData[catId];
+            if (catId && data && data.ids.length > 0) {
+                for (var i = 0; i < data.ids.length; i++) {
+                    var opt = document.createElement('option');
+                    opt.value = data.ids[i];
+                    opt.textContent = data.nomes[i];
+                    if (preSelectedSubId !== null && data.ids[i] == preSelectedSubId) {
+                        opt.selected = true;
+                    }
+                    subSelect.appendChild(opt);
+                }
+                subSelect.disabled = false;
+            } else {
+                subSelect.disabled = true;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            atualizarSubcategorias(subId);
+        });
+    </script>
+{% endblock %}

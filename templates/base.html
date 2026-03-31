@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Damas Acessórios | Elegância em Detalhes{% endblock %}</title>
+
+    <!-- Scripts & Frameworks -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900&display=swap"
+        rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+    <style>
+        :root {
+            --brand-blue: #3C9AAE;
+            --brand-dark: #2B7A8F;
+            --luxury-gold: #D4AF37;
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .luxury-card {
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .luxury-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(43, 122, 143, 0.1);
+        }
+
+        .luxury-input {
+            background: #f8fafc;
+            border: 1px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .luxury-input:focus {
+            background: #fff;
+            border-color: var(--brand-blue);
+            box-shadow: 0 0 0 4px rgba(60, 154, 174, 0.1);
+        }
+
+        /* Animações Premium */
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-luxury {
+            animation: fadeInSlideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Scrollbar Personalizada */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--brand-blue);
+        }
+    </style>
+
+    {% block head %}{% endblock %}
+</head>
+
+<body class="antialiased font-sans text-gray-900">
+
+    <!-- NAVBAR MOBILE-FIRST -->
+    <nav class="glass-nav border-b border-gray-100 sticky top-0 z-50 transition-all duration-500">
+        <!-- Row principal -->
+        <div class="px-4 md:px-6 py-3 flex items-center justify-between gap-4">
+            <!-- Logo -->
+            <a href="/" class="flex items-center gap-3 hover:opacity-80 transition flex-shrink-0">
+                <img src="/static/logo_transparente.png" alt="Damas Acessórios" class="h-10 md:h-12 rounded-xl">
+            </a>
+
+            <!-- Nav desktop (links de categorias) -->
+            <div
+                class="hidden md:flex items-center gap-x-6 gap-y-2 text-[9px] font-bold tracking-[0.25em] uppercase text-[#2B7A8F] flex-1 justify-center">
+                <a href="/#vitrine" class="nav-link px-2 py-1 relative hover-line">Início</a>
+                {% for cat in categorias %}
+                <a href="{{ url_for('index', cat=cat.id) }}#vitrine" class="nav-link px-2 py-1 relative hover-line">{{
+                    cat.nome }}</a>
+                {% endfor %}
+            </div>
+
+            <!-- Ações (Busca + Carrinho + Hamburger) -->
+            <div class="flex items-center gap-2 flex-shrink-0">
+
+                <!-- Busca Desktop -->
+                <form action="{{ url_for('busca') }}" method="GET" class="relative group hidden md:block">
+                    <input type="text" name="q" placeholder="Buscar peça..."
+                        class="pl-9 pr-4 py-2 bg-gray-50 border-none rounded-2xl text-[10px] uppercase font-bold tracking-widest text-[#2B7A8F] focus:ring-1 focus:ring-[#3C9AAE] w-40 focus:w-52 transition-all duration-300 placeholder-gray-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2"
+                        class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#3C9AAE] transition-colors">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </form>
+
+                <!-- Busca Mobile (ícone que abre campo) -->
+                <button id="mobile-search-btn" onclick="toggleMobileSearch()"
+                    class="md:hidden p-2.5 hover:bg-gray-100 rounded-full transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" class="text-[#2B7A8F]">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+
+                <!-- Carrinho -->
+                <button onclick="toggleCart()"
+                    class="relative p-2.5 hover:bg-gray-100 rounded-full transition-all duration-300 group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                        class="text-[#2B7A8F] group-hover:scale-110 transition-transform">
+                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                        <path d="M3 6h18" />
+                        <path d="M16 10a4 4 0 0 1-8 0" />
+                    </svg>
+                    <span id="cart-count-badge" class="cart-badge bg-[#3C9AAE] text-white">0</span>
+                </button>
+
+                <!-- Hamburger Mobile -->
+                <button id="hamburger-btn" onclick="toggleMobileMenu()"
+                    class="md:hidden p-2.5 hover:bg-gray-100 rounded-full transition-all">
+                    <svg id="hamburger-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-[#2B7A8F]">
+                        <line x1="4" x2="20" y1="6" y2="6" />
+                        <line x1="4" x2="20" y1="12" y2="12" />
+                        <line x1="4" x2="20" y1="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Campo de Busca Mobile (expandível) -->
+        <div id="mobile-search-bar" class="hidden px-4 pb-3 md:hidden">
+            <form action="{{ url_for('busca') }}" method="GET" class="relative">
+                <input type="text" name="q" id="mobile-search-input" placeholder="Buscar produto..."
+                    class="w-full pl-10 pr-4 py-3 bg-gray-50 border-none rounded-2xl text-sm text-[#2B7A8F] focus:ring-2 focus:ring-[#3C9AAE] transition">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2"
+                    class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </form>
+        </div>
+
+        <!-- Menu Mobile (hamburger aberto) -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100 bg-white/95 backdrop-blur">
+            <div class="px-4 py-4 flex flex-col gap-1">
+                <a href="/#vitrine" onclick="toggleMobileMenu()"
+                    class="px-4 py-3 text-[10px] font-bold tracking-[0.25em] uppercase text-[#2B7A8F] rounded-xl hover:bg-gray-50 transition">Início</a>
+                {% for cat in categorias %}
+                <a href="{{ url_for('index', cat=cat.id) }}#vitrine" onclick="toggleMobileMenu()"
+                    class="px-4 py-3 text-[10px] font-bold tracking-[0.25em] uppercase text-[#2B7A8F] rounded-xl hover:bg-gray-50 transition">{{
+                    cat.nome }}</a>
+                {% endfor %}
+                <div class="border-t border-gray-100 mt-2 pt-2">
+                    <a href="https://wa.me/{{ whatsapp_global }}" target="_blank"
+                        class="px-4 py-3 text-[10px] font-bold tracking-[0.25em] uppercase text-[#3C9AAE] rounded-xl hover:bg-blue-50 transition flex items-center gap-2">
+                        💬 Atendimento VIP
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    {% block footer %}
+    <footer class="bg-white text-[#2B7A8F] font-sans py-20 border-t border-gray-100 mt-20">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-20 mb-20">
+            <div class="md:col-span-4 flex flex-col items-center md:items-start text-center md:text-left">
+                <img src="/static/logo_transparente.png" alt="Logo Damas Acessórios" class="h-14 rounded-xl mb-8">
+                <h4 class="text-2xl font-serif mb-6 text-[#2B7A8F]">Damas Acessórios</h4>
+                <p class="text-[11px] leading-relaxed text-gray-400 uppercase tracking-widest font-light">
+                    Sua curadoria de elegância há mais de 8 anos transformando momentos em memórias preciosas.
+                </p>
+                <div class="flex gap-6 mt-10">
+                    <a href="#"
+                        class="p-3 bg-gray-50 rounded-full hover:bg-[#3C9AAE] hover:text-white transition-all group">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                            <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                        </svg>
+                    </a>
+                    <a href="#" class="p-3 bg-gray-50 rounded-full hover:bg-[#3C9AAE] hover:text-white transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                    </a>
+                </div>
+                <div class="mt-8 flex flex-col items-center md:items-start gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-[#3C9AAE]">EXCELENTE</span>
+                        <div class="flex gap-0.5">
+                            {% for i in range(5) %}
+                            <svg class="w-2.5 h-2.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <a href="#" target="_blank"
+                        class="text-[9px] font-bold tracking-widest uppercase text-[#3C9AAE] hover:opacity-80 transition-colors">Ler
+                        avaliações no Google ↗</a>
+                </div>
+            </div>
+            <div class="md:col-span-8 h-48 border border-gray-100 bg-gray-50 relative group overflow-hidden">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3657.1973685458997!2d-46.65860268440618!3d-23.561337467469796!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce59c8da0aa315%3A0xd59f9431f2c9776a!2sAv.%20Paulista%2C%20S%C3%A3o%20Paulo%20-%20SP!5e0!3m2!1spt-BR!2sbr!4v1683415848243!5m2!1spt-BR!2sbr"
+                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+        <div class="max-w-4xl mx-auto px-6 border-t border-gray-100 pt-8 flex flex-col items-center">
+            <p class="text-[9px] text-gray-300 mb-4 tracking-[0.2em] font-bold uppercase">&copy; 2026 DAMAS ACESSÓRIOS.
+                TODOS OS DIREITOS RESERVADOS.</p>
+            <a href="/login"
+                class="inline-flex items-center gap-2 text-[8px] text-gray-300 font-bold tracking-widest hover:text-[#3C9AAE] transition uppercase">Acesso
+                Restrito Administrador</a>
+        </div>
+    </footer>
+    {% endblock %}
+
+    <!-- CART DRAWER -->
+    <div id="cart-overlay" class="cart-overlay" onclick="toggleCart()"></div>
+    <div id="cart-drawer" class="cart-drawer flex flex-col">
+        <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+            <h3 class="text-xl font-serif text-[#2B7A8F]">Seu Carrinho</h3>
+            <button onclick="toggleCart()" class="text-gray-400 hover:text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-6">
+            <!-- Itens do carrinho aparecem aqui -->
+        </div>
+
+        <div class="p-6 border-t border-gray-100 bg-gray-50/50 space-y-4">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs uppercase tracking-widest text-gray-400 font-bold">Total Estimado</span>
+                <span id="cart-total" class="text-lg font-serif font-bold text-[#3C9AAE]">R$ 0,00</span>
+            </div>
+            <button onclick="openCheckoutModal()"
+                class="jewel-shine w-full bg-[#3C9AAE] text-white py-4 text-[10px] font-bold uppercase tracking-[0.2em] transition hover:bg-[#2B7A8F]">
+                Finalizar Pedido via WhatsApp
+            </button>
+            <p class="text-[9px] text-gray-400 text-center leading-relaxed">
+                * Itens do Mercado Livre serão redirecionados para pagamento externo seguro.
+            </p>
+        </div>
+    </div>
+
+    <!-- CHECKOUT MODAL -->
+    <div id="checkout-modal"
+        class="fixed inset-0 z-[60] bg-[#2B7A8F]/80 backdrop-blur-sm flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div
+            class="bg-white p-8 rounded-2xl max-w-md w-full mx-6 transform scale-95 transition-transform duration-300 relative checkout-modal-content">
+            <button onclick="closeCheckoutModal()"
+                class="absolute top-4 right-4 text-gray-400 hover:text-[#3C9AAE] transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                </svg>
+            </button>
+            <h3 class="text-2xl font-serif text-[#2B7A8F] mb-2">Finalizar Pedido</h3>
+            <p class="text-xs text-gray-500 mb-6">Para um atendimento personalizado, como a Juliana deve te chamar?</p>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[9px] uppercase font-bold tracking-[0.2em] text-[#3C9AAE] mb-2">Seu
+                        Nome</label>
+                    <input type="text" id="checkout-nome" placeholder="Ex: Maria Carolina"
+                        class="w-full p-4 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#3C9AAE] transition-all"
+                        required>
+                </div>
+                <div>
+                    <label class="block text-[9px] uppercase font-bold tracking-[0.2em] text-[#3C9AAE] mb-2">Observações
+                        (Opcional)</label>
+                    <textarea id="checkout-obs" placeholder="Ex: É para presente, embalar separado..."
+                        class="w-full p-4 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#3C9AAE] h-24 transition-all"></textarea>
+                </div>
+                <button onclick="enviarPedidoWhatsApp()"
+                    class="jewel-shine w-full bg-[#25D366] text-white py-4 mt-2 rounded-xl text-[11px] font-bold uppercase tracking-[0.2em] transition hover:bg-[#128C7E] flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="currentColor">
+                        <path
+                            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.878-.788-1.47-1.761-1.643-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.571-.012c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+                    </svg>
+                    Enviar Pedido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts Globais -->
+    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+    <script>
+        // Variáveis globais injetadas pelo servidor
+        window.WHATSAPP_GLOBAL = '{{ whatsapp_global }}';
+
+        // Observer para animações de entrada
+        const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+        // ==================== MOBILE MENU ====================
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('hamburger-icon');
+            if (!menu) return;
+            const isOpen = !menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', isOpen);
+            // Troca ícone de hamburguer para X
+            icon.innerHTML = isOpen
+                ? '<line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/>'
+                : '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>';
+        }
+
+        function toggleMobileSearch() {
+            const bar = document.getElementById('mobile-search-bar');
+            if (!bar) return;
+            const isHidden = bar.classList.contains('hidden');
+            bar.classList.toggle('hidden', !isHidden);
+            if (isHidden) {
+                // Foca no campo depois de um pequeno delay
+                setTimeout(() => {
+                    const input = document.getElementById('mobile-search-input');
+                    if (input) input.focus();
+                }, 100);
+            }
+        }
+
+        // Fecha menus ao clicar fora
+        document.addEventListener('click', function (e) {
+            const menu = document.getElementById('mobile-menu');
+            const searchBar = document.getElementById('mobile-search-bar');
+            const hamburgerBtn = document.getElementById('hamburger-btn');
+            const searchBtn = document.getElementById('mobile-search-btn');
+
+            if (menu && !menu.classList.contains('hidden') &&
+                !menu.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+            if (searchBar && !searchBar.classList.contains('hidden') &&
+                !searchBar.contains(e.target) && searchBtn && !searchBtn.contains(e.target)) {
+                searchBar.classList.add('hidden');
+            }
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+
+    <!-- BOTÃO FLUTUANTE WHATSAPP -->
+    <style>
+        #whatsapp-fab {
+            transition: transform 0.3s ease, filter 0.3s ease;
+            filter: drop-shadow(0 10px 25px rgba(37, 211, 102, 0.5));
+        }
+
+        #whatsapp-fab:hover {
+            transform: scale(1.05) translateY(-3px);
+            filter: drop-shadow(0 15px 35px rgba(37, 211, 102, 0.6));
+        }
+    </style>
+
+    <a id="whatsapp-fab"
+        href="https://wa.me/{{ whatsapp_global }}?text=Olá!%20Vim%20pela%20loja%20e%20gostaria%20de%20atendimento%20VIP%20😊"
+        target="_blank" rel="noopener" class="fixed bottom-6 right-5 z-50 flex items-center gap-2 group"
+        aria-label="Fale no WhatsApp">
+        <!-- Texto sempre visível -->
+        <span
+            class="bg-white text-[#128C7E] text-[11px] font-bold uppercase tracking-widest px-6 py-3.5 rounded-full shadow-sm border border-gray-50 whitespace-nowrap">
+            Atendimento VIP
+        </span>
+        <!-- Botão -->
+        <div
+            class="w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="white">
+                <path
+                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.878-.788-1.47-1.761-1.643-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.571-.012c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+            </svg>
+        </div>
+    </a>
+
+</body>
+
+</html>

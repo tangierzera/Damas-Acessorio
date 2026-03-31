@@ -1,0 +1,594 @@
+{% extends "base.html" %}
+
+{% block title %}Painel Administrativo - Damas Acessórios{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-12">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6 animate-on-scroll fade-in">
+        <div>
+            <h1 class="text-4xl font-serif font-black text-[#2B7A8F] mb-2">Painel de Gestão</h1>
+            <p class="text-xs text-gray-400 uppercase tracking-widest font-bold">Gerencie seu catálogo de luxo</p>
+        </div>
+        <div class="flex gap-4">
+            <a href="{{ url_for('index') }}"
+                class="px-6 py-3 border border-gray-100 text-gray-400 text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 transition rounded-lg">Ver
+                Loja</a>
+            <a href="{{ url_for('logout') }}"
+                class="px-6 py-3 border border-red-100 text-red-500 text-[10px] font-bold uppercase tracking-widest hover:bg-red-50 transition rounded-lg">Sair</a>
+        </div>
+    </div>
+
+    <!-- DASHBOARD STATS -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12 animate-on-scroll fade-in">
+        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-[9px] text-gray-400 uppercase tracking-widest font-bold mb-1">Total Produtos</p>
+                <h3 class="text-3xl font-serif text-[#2B7A8F]">{{ total_produtos }}</h3>
+            </div>
+            <div class="p-4 bg-blue-50 text-[#3C9AAE] rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16" />
+                </svg>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-[9px] text-gray-400 uppercase tracking-widest font-bold mb-1">Categorias</p>
+                <h3 class="text-3xl font-serif text-[#2B7A8F]">{{ total_categorias }}</h3>
+            </div>
+            <div class="p-4 bg-teal-50 text-teal-600 rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                </svg>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-[9px] text-gray-400 uppercase tracking-widest font-bold mb-1">Valor em Estoque</p>
+                <h3 class="text-3xl font-serif text-[#2B7A8F]">R$ {{ "%.2f"|format(valor_estoque)|replace('.', ',') }}
+                </h3>
+            </div>
+            <div class="p-4 bg-amber-50 text-amber-600 rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2v20" />
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+            </div>
+        </div>
+        <!-- ML Status Card -->
+        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between cursor-pointer hover:border-[#3C9AAE] transition" onclick="document.getElementById('mlModal').classList.remove('hidden')">
+            <div>
+                <p class="text-[9px] text-gray-400 uppercase tracking-widest font-bold mb-1">Integração API ML</p>
+                {% if ml_conectado %}
+                <h3 class="text-xl font-bold text-green-600 flex items-center gap-2"><div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div> Conectada</h3>
+                {% else %}
+                <h3 class="text-xl font-bold text-red-500 flex items-center gap-2"><div class="w-3 h-3 bg-red-500 rounded-full"></div> Offline</h3>
+                {% endif %}
+            </div>
+            <div class="p-4 bg-yellow-50 text-yellow-600 rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- ML CONFIG MODAL -->
+    <div id="mlModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-2xl w-full max-w-md shadow-2xl">
+            <h2 class="text-2xl font-serif text-[#2B7A8F] mb-4">Configurar Mercado Livre</h2>
+            <p class="text-xs text-gray-500 mb-6 font-medium uppercase tracking-wider">Passo 1: Chaves da API</p>
+            <div class="space-y-4">
+                <input type="text" id="mlAppId" placeholder="App ID / Client ID" class="w-full p-4 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#3C9AAE] transition">
+                <input type="password" id="mlSecret" placeholder="Client Secret" class="w-full p-4 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#3C9AAE] transition">
+            </div>
+            <div class="mt-8 flex gap-3">
+                <button onclick="document.getElementById('mlModal').classList.add('hidden')" class="flex-1 px-4 py-3 border border-gray-200 text-gray-400 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 transition">Fechar</button>
+                <button onclick="salvarMlConfig()" class="flex-1 px-4 py-3 bg-[#3C9AAE] text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-[#2B7A8F] transition shadow-lg shadow-[#3C9AAE]/20">Salvar & Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-8 space-y-2 animate-on-scroll fade-in">
+        {% for category, message in messages %}
+        <div class="px-6 py-4 rounded-xl text-sm font-medium
+             {% if category == 'success' %}bg-green-50 text-green-700 border border-green-100
+             {% elif category == 'error' %}bg-red-50 text-red-700 border border-red-100
+             {% elif category == 'warning' %}bg-amber-50 text-amber-700 border border-amber-100
+             {% else %}bg-blue-50 text-blue-700 border border-blue-100{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- GESTÃO DE ESTRUTURA (CATEGORIAS) -->
+    <section id="categorias"
+        class="bg-white p-8 md:p-12 rounded-2xl border border-gray-100 shadow-sm mb-16 animate-on-scroll fade-in">
+        <div class="flex items-center gap-4 mb-10 border-b border-gray-50 pb-6">
+            <div class="w-10 h-10 bg-[#3C9AAE] rounded-full flex items-center justify-center text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                </svg>
+            </div>
+            <h2 class="text-2xl font-serif text-[#2B7A8F]">Gestão de Estrutura</h2>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Categorias -->
+            <div>
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Categorias Principais</h3>
+                <form action="{{ url_for('admin_add_categoria') }}" method="POST" class="flex gap-2 mb-8">
+                    <input type="text" name="nome" placeholder="Nova Categoria (ex: Joias)"
+                        class="flex-1 p-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#3C9AAE] transition"
+                        required>
+                    <button type="submit"
+                        class="bg-[#3C9AAE] text-white px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-[#2B7A8F] transition">Add</button>
+                </form>
+                <div class="space-y-3">
+                    {% for cat in categorias %}
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl group">
+                        <div>
+                            <span class="text-sm font-bold text-[#2B7A8F] uppercase tracking-wider">{{ cat.nome
+                                }}</span>
+                            <span class="text-[9px] text-gray-300 ml-2">{{ cat.subcategorias | length }} subcategorias ·
+                                {{ cat.produtos | length }} produtos</span>
+                        </div>
+                        <!-- Deletar via POST (seguro contra CSRF e acesso direto) -->
+                        <form action="{{ url_for('admin_del_categoria', id=cat.id) }}" method="POST"
+                            onsubmit="return confirm('Isso excluirá todas as subcategorias e produtos vinculados. Confirmar?')">
+                            <button type="submit" class="text-red-300 hover:text-red-500 transition p-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M3 6h18" />
+                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <p class="text-xs text-gray-300 text-center py-4">Nenhuma categoria cadastrada.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Subcategorias -->
+            <div>
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Subcategorias</h3>
+                <form action="{{ url_for('admin_add_subcategoria') }}" method="POST" class="flex flex-col gap-3 mb-8">
+                    <select name="categoria_id"
+                        class="w-full p-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#3C9AAE] transition"
+                        required>
+                        <option value="">Selecionar Categoria Pai...</option>
+                        {% for cat in categorias %}
+                        <option value="{{ cat.id }}">{{ cat.nome }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="flex gap-2">
+                        <input type="text" name="nome" placeholder="Nova Subcategoria (ex: Anéis)"
+                            class="flex-1 p-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#3C9AAE] transition"
+                            required>
+                        <button type="submit"
+                            class="bg-[#3C9AAE] text-white px-6 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-[#2B7A8F] transition">Add</button>
+                    </div>
+                </form>
+
+                <div class="max-h-[300px] overflow-y-auto pr-2 space-y-4">
+                    {% set tem_subcategorias = categorias | selectattr('subcategorias') | list %}
+                    {% if not tem_subcategorias %}
+                    <p class="text-xs text-gray-300 text-center py-4">Nenhuma subcategoria cadastrada.</p>
+                    {% endif %}
+                    {% for cat in categorias %}
+                    {% if cat.subcategorias %}
+                    <div>
+                        <span class="text-[9px] font-black text-gray-300 uppercase tracking-widest mb-2 block">{{
+                            cat.nome }}</span>
+                        <div class="grid grid-cols-1 gap-2">
+                            {% for sub in cat.subcategorias %}
+                            <div
+                                class="flex items-center justify-between p-3 border border-gray-50 rounded-xl group hover:bg-gray-50 transition-colors">
+                                <span class="text-xs font-medium text-gray-500">{{ sub.nome }}</span>
+                                <form action="{{ url_for('admin_del_subcategoria', id=sub.id) }}" method="POST"
+                                    onsubmit="return confirm('Excluir subcategoria {{ sub.nome }}?')">
+                                    <button type="submit" class="text-gray-200 hover:text-red-400 transition p-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M3 6h18" />
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FORMULÁRIO DE CADASTRO -->
+    <section class="bg-white p-8 md:p-12 rounded-2xl border border-gray-100 shadow-sm mb-16 animate-on-scroll fade-in">
+        <div class="flex items-center gap-4 mb-10 border-b border-gray-50 pb-6">
+            <div class="w-10 h-10 bg-[#3C9AAE] rounded-full flex items-center justify-center text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14" />
+                    <path d="M12 5v14" />
+                </svg>
+            </div>
+            <h2 class="text-2xl font-serif text-[#2B7A8F]">Cadastrar Novo Produto</h2>
+        </div>
+
+        <form action="{{ url_for('admin') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Nome da
+                        Peça</label>
+                    <input type="text" name="nome" placeholder="Ex: Anel Solitário Brilhante"
+                        class="w-full p-4 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-[#3C9AAE] transition font-medium"
+                        required>
+                </div>
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label
+                            class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Categoria</label>
+                        <select name="categoria_id" id="categoria_select"
+                            class="w-full p-4 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-[#3C9AAE] transition font-medium"
+                            onchange="atualizarSubcategorias()">
+                            <option value="">Selecionar...</option>
+                            {% for cat in categorias %}
+                            <option value="{{ cat.id }}">{{ cat.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Subcategoria</label>
+                        <select name="subcategoria_id" id="subcategoria_select"
+                            class="w-full p-4 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-[#3C9AAE] transition font-medium disabled:opacity-50"
+                            disabled>
+                            <option value="">Escolha a categoria primeiro</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Preço
+                        (R$)</label>
+                    <input type="text" name="preco" placeholder="129,90"
+                        class="w-full p-4 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-[#3C9AAE] transition font-medium"
+                        required>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Descrição
+                        Curta (Vitrine)</label>
+                    <textarea name="descricao_curta" placeholder="Breve resumo para atrair o cliente..."
+                        class="w-full p-4 bg-gray-50 border-none rounded-xl h-24 focus:ring-2 focus:ring-[#3C9AAE] transition font-medium"></textarea>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Descrição
+                        Detalhada</label>
+                    <textarea name="descricao_longa" placeholder="Fale sobre materiais, tamanhos, e cuidados..."
+                        class="w-full p-4 bg-gray-50 border-none rounded-xl h-24 focus:ring-2 focus:ring-[#3C9AAE] transition font-medium"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    {% for i in range(1, 5) %}
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Foto {{
+                            i }} (URL)</label>
+                        <input type="text" name="imagem_{{ i }}" placeholder="http://..."
+                            class="w-full p-3 bg-gray-50 border-none rounded-xl text-[11px] focus:ring-2 focus:ring-[#3C9AAE] transition">
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-[#3C9AAE] uppercase tracking-widest mb-2 flex justify-between items-center">
+                            <span>Link ML (Colar aqui)</span>
+                            <span id="ml-status-indicator" class="hidden text-[#3C9AAE] text-[8px] bg-[#3C9AAE]/10 px-2 py-0.5 rounded font-bold animate-pulse">Importando...</span>
+                        </label>
+                        <input type="text" id="link_ml_input" name="link_mercadolivre" placeholder="Cole o link do Mercado Livre aqui..."
+                            class="w-full p-3 bg-blue-50/50 border border-[#3C9AAE]/30 rounded-xl text-[11px] focus:ring-2 focus:ring-[#3C9AAE] transition">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 flex justify-between items-center">
+                            <span>Vídeo YT / ML</span>
+                            <span id="video-badge" class="hidden bg-red-100 text-red-600 text-[8px] px-2 py-0.5 rounded font-bold uppercase">Auto</span>
+                        </label>
+                        <input type="text" name="video_url" id="video_url_input" placeholder="URL do Vídeo"
+                            class="w-full p-3 bg-gray-50 border-none rounded-xl text-[11px] focus:ring-2 focus:ring-[#3C9AAE] transition">
+                    </div>
+                    <div>
+                        <label
+                            class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">WhatsApp</label>
+                        <input type="text" name="whatsapp" placeholder="5511999999999"
+                            class="w-full p-3 bg-gray-50 border-none rounded-xl text-[11px] focus:ring-2 focus:ring-[#3C9AAE] transition">
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 pt-4">
+                <button type="submit"
+                    class="jewel-shine w-full bg-[#3C9AAE] text-white py-5 rounded-xl text-[11px] font-bold uppercase tracking-[0.4em] transition hover:bg-[#2B7A8F] shadow-xl shadow-[#3C9AAE]/20">
+                    Cadastrar Produto no Sistema
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <!-- LISTA DE PRODUTOS -->
+    <section class="animate-on-scroll fade-in">
+        <div class="flex items-center justify-between mb-8 border-b border-gray-100 pb-6">
+            <h2 class="text-2xl font-serif text-[#2B7A8F]">Produtos no Catálogo</h2>
+            <span
+                class="bg-gray-100 text-gray-500 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest">{{
+                produtos | length }} Itens</span>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+            {% for pr in produtos %}
+            <div
+                class="bg-white p-6 rounded-2xl border border-gray-100 flex flex-col md:flex-row items-center gap-6 group hover:border-[#3C9AAE]/20 transition-all duration-300">
+                <div class="w-20 h-24 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0">
+                    {% if pr.get_imagem_principal() %}
+                    <img src="{{ pr.get_imagem_principal() }}" alt="{{ pr.nome }}" class="w-full h-full object-contain">
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center">
+                        <span class="text-gray-200 text-[8px] uppercase">Sem Img</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="flex-1 text-center md:text-left">
+                    <div class="flex flex-wrap gap-2 mb-2 justify-center md:justify-start">
+                        {% if pr.categoria_ref %}
+                        <span
+                            class="text-[8px] bg-[#3C9AAE]/5 text-[#3C9AAE] px-2 py-0.5 rounded-sm font-bold uppercase tracking-tighter">
+                            {{ pr.categoria_ref.nome }}
+                        </span>
+                        {% elif pr.categoria %}
+                        <span
+                            class="text-[8px] bg-gray-100 text-gray-300 px-2 py-0.5 rounded-sm font-bold uppercase tracking-tighter">
+                            {{ pr.categoria }}
+                        </span>
+                        {% endif %}
+                        {% if pr.subcategoria_ref %}
+                        <span
+                            class="text-[8px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-sm font-bold uppercase tracking-tighter">
+                            {{ pr.subcategoria_ref.nome }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <h4 class="text-sm font-bold text-[#2B7A8F] uppercase tracking-wider mb-1">{{ pr.nome }}</h4>
+                    <p class="text-xs text-gray-400 font-serif font-bold italic">R$ {{
+                        "%.2f"|format(pr.preco)|replace('.', ',') }}</p>
+                </div>
+                <div
+                    class="flex flex-col flex-wrap sm:flex-row justify-center md:justify-end gap-3 flex-shrink-0 mt-4 md:mt-0 w-full sm:w-auto">
+                    <!-- Toggle Visibilidade -->
+                    <form action="{{ url_for('admin_toggle_visibilidade', id=pr.id) }}" method="POST">
+                        <button type="submit"
+                            title="{% if pr.ativo %}Ocultar Produto{% else %}Mostrar Produto{% endif %}"
+                            class="px-4 py-3 {% if pr.ativo %}bg-blue-50 text-blue-500 hover:bg-blue-100{% else %}bg-gray-100 text-gray-400 hover:bg-gray-200{% endif %} text-[9px] font-bold uppercase tracking-widest rounded-lg flex items-center justify-center gap-2 transition w-full sm:w-auto">
+                            {% if pr.ativo %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                            Visível
+                            {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+                                <path
+                                    d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
+                                <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
+                                <line x1="2" y1="2" x2="22" y2="22" />
+                            </svg>
+                            Oculto
+                            {% endif %}
+                        </button>
+                    </form>
+
+                    <a href="{{ url_for('editar', id=pr.id) }}"
+                        class="px-5 py-3 bg-gray-50 text-gray-500 text-[9px] font-bold uppercase tracking-widest rounded-lg hover:bg-gray-100 flex items-center justify-center transition w-full sm:w-auto">Editar</a>
+                    <!-- Deletar via POST -->
+                    <form action="{{ url_for('deletar', id=pr.id) }}" method="POST"
+                        onsubmit="return confirm('Excluir {{ pr.nome }} permanentemente?')">
+                        <button type="submit"
+                            class="w-full px-6 py-3 border border-red-50/50 text-red-300 text-[9px] font-bold uppercase tracking-widest rounded-lg hover:bg-red-50 hover:text-red-500 transition">Excluir</button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-16 text-gray-300">
+                <p class="text-sm font-light uppercase tracking-widest">Nenhum produto cadastrado ainda.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+    input::placeholder,
+    textarea::placeholder {
+        color: #CBD5E1;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: normal;
+    }
+</style>
+    <!-- DATA INJECTION (Safe for IDE Linter) -->
+    <script id="categories-data" type="application/json">
+        {
+            {% for cat in categorias %}
+            "{{ cat.id }}": [
+                {% for sub in cat.subcategorias %}
+                {"id": {{ sub.id }}, "nome": "{{ sub.nome|e }}"}{% if not loop.last %},{% endif %}
+                {% endfor %}
+            ]{% if not loop.last %},{% endif %}
+            {% endfor %}
+        }
+    </script>
+
+    <script>
+        const subsPorCat = JSON.parse(document.getElementById('categories-data').textContent);
+
+        function atualizarSubcategorias() {
+            const catId = document.getElementById('categoria_select').value;
+            const subSelect = document.getElementById('subcategoria_select');
+
+            subSelect.innerHTML = '<option value="">Selecionar...</option>';
+
+            const subs = subsPorCat[catId];
+            if (catId && subs && subs.length > 0) {
+                subs.forEach(sub => {
+                    const opt = document.createElement('option');
+                    opt.value = sub.id;
+                    opt.textContent = sub.nome;
+                    subSelect.appendChild(opt);
+                });
+                subSelect.disabled = false;
+            } else {
+                subSelect.innerHTML = '<option value="">Sem subcategorias</option>';
+                subSelect.disabled = true;
+            }
+        }
+
+    // --- GESTÃO ML CONFIG ---
+    function salvarMlConfig() {
+        const appId = document.getElementById('mlAppId').value.trim();
+        const secret = document.getElementById('mlSecret').value.trim();
+        if(!appId || !secret) {
+            alert('Por favor, preencha o App ID e o Secret.');
+            return;
+        }
+
+        fetch('/admin/config/ml', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({client_id: appId, client_secret: secret})
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'ok') {
+                window.location.href = '/admin/ml/auth';
+            }
+        });
+    }
+
+    // --- Integração Mercado Livre ---
+    const linkInput = document.getElementById('link_ml_input');
+    const mlStatus = document.getElementById('ml-status-indicator');
+    let mlDebounceTimer;
+
+    if (linkInput && mlStatus) {
+        linkInput.addEventListener('input', function() {
+            clearTimeout(mlDebounceTimer);
+            const url = this.value.trim();
+            
+            if ((url.includes('mercadolivre.com') || url.includes('mercadolibre.com')) && url.includes('MLB')) {
+                mlStatus.classList.remove('hidden');
+                mlStatus.classList.add('animate-pulse', 'text-[#3C9AAE]', 'bg-[#3C9AAE]/10');
+                mlStatus.classList.remove('text-red-500', 'bg-red-50', 'text-green-600', 'bg-green-50');
+                mlStatus.textContent = 'Buscando dados...';
+
+                mlDebounceTimer = setTimeout(() => {
+                    fetch(`/admin/api/mercadolivre?url=${encodeURIComponent(url)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            mlStatus.classList.remove('animate-pulse');
+                            if (data.error) {
+                                mlStatus.textContent = 'Falha: ' + data.error;
+                                mlStatus.className = 'text-red-500 text-[8px] bg-red-50 px-2 py-0.5 rounded font-bold';
+                                return;
+                            }
+                            
+                            // Auto-preenchimento
+                            if (data.nome) document.querySelector('input[name="nome"]').value = data.nome;
+                            if (data.preco) document.querySelector('input[name="preco"]').value = data.preco;
+                            if (data.descricao_longa) {
+                                document.querySelector('textarea[name="descricao_longa"]').value = data.descricao_longa;
+                            }
+                            if (data.descricao_curta) {
+                                document.querySelector('textarea[name="descricao_curta"]').value = data.descricao_curta;
+                            }
+                            
+                            // Vídeo
+                            if (data.video_url) {
+                                const vInput = document.getElementById('video_url_input');
+                                if (vInput) {
+                                    vInput.value = data.video_url;
+                                    document.getElementById('video-badge').classList.remove('hidden');
+                                }
+                            }
+
+                            // Categoria Automática
+                            if (data.categoria_sugerida) {
+                                const catSelect = document.getElementById('categoria_select');
+                                const opts = catSelect.options;
+                                for (let i = 0; i < opts.length; i++) {
+                                    if (opts[i].text.toLowerCase() === data.categoria_sugerida.toLowerCase()) {
+                                        opts[i].selected = true;
+                                        atualizarSubcategorias();
+                                        mlStatus.textContent += ' | Sugestão: ' + data.categoria_sugerida;
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                            // Imagens
+                            if (data.imagens && data.imagens.length > 0) {
+                                data.imagens.forEach((imgUrl, idx) => {
+                                    const imgInput = document.querySelector(`input[name="imagem_${idx + 1}"]`);
+                                    if (imgInput) imgInput.value = imgUrl;
+                                });
+                            }
+
+                            // Feedback Visual Sucesso
+                            mlStatus.textContent = 'Importado!';
+                            mlStatus.className = 'text-green-600 text-[8px] bg-green-50 px-2 py-0.5 rounded font-bold';
+                            
+                            setTimeout(() => mlStatus.classList.add('hidden'), 4000);
+                        })
+                        .catch(err => {
+                            mlStatus.classList.remove('animate-pulse');
+                            mlStatus.textContent = 'Erro de rede';
+                            mlStatus.className = 'text-red-500 text-[8px] bg-red-50 px-2 py-0.5 rounded font-bold';
+                        });
+                }, 800);
+            } else {
+                mlStatus.classList.add('hidden');
+            }
+        });
+    }
+</script>
+{% endblock %}

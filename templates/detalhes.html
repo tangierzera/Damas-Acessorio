@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}{{ p.nome }} | Damas Acessórios{% endblock %}
+
+{% block head %}
+<!-- Open Graph Meta Tags (Marketing & WhatsApp) -->
+<meta property="og:title" content="{{ p.nome }} | Damas Acessórios" />
+<meta property="og:description"
+    content="{{ (p.descricao or 'Descubra a elegância deste acessório exclusivo da Damas.') | truncate(150) }}" />
+<meta property="og:type" content="product" />
+{% if p.get_imagem_principal() %}
+<meta property="og:image" content="{{ p.get_imagem_principal() }}" />
+<meta property="og:image:alt" content="{{ p.nome }}" />
+{% endif %}
+<meta property="product:price:amount" content="{{ p.preco }}" />
+<meta property="product:price:currency" content="BRL" />
+{% endblock %}
+
+{% block content %}
+<main class="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-20">
+    <!-- Breadcrumb -->
+    <div class="mb-8 animate-on-scroll fade-in">
+        <a href="{{ url_for('index') }}"
+            class="text-[9px] font-bold text-gray-300 uppercase tracking-widest hover:text-[#3C9AAE] transition">Início</a>
+        {% if p.categoria_ref %}
+        <span class="text-gray-200 mx-2">›</span>
+        <a href="{{ url_for('index', cat=p.categoria_id) }}"
+            class="text-[9px] font-bold text-gray-300 uppercase tracking-widest hover:text-[#3C9AAE] transition">{{
+            p.categoria_ref.nome }}</a>
+        {% endif %}
+        {% if p.subcategoria_ref %}
+        <span class="text-gray-200 mx-2">›</span>
+        <a href="{{ url_for('index', cat=p.categoria_id, sub=p.subcategoria_id) }}"
+            class="text-[9px] font-bold text-gray-300 uppercase tracking-widest hover:text-[#3C9AAE] transition">{{
+            p.subcategoria_ref.nome }}</a>
+        {% endif %}
+        <span class="text-gray-200 mx-2">›</span>
+        <span class="text-[9px] font-bold text-[#3C9AAE] uppercase tracking-widest">{{ p.nome }}</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 animate-on-scroll fade-in">
+
+        <!-- GALERIA DE IMAGENS -->
+        <div class="space-y-4">
+            <div class="aspect-square bg-gray-100 overflow-hidden border border-gray-100 shadow-inner">
+                {% if p.get_imagem_principal() %}
+                <img id="main-img" src="{{ p.get_imagem_principal() }}" alt="{{ p.nome }}"
+                    class="w-full h-full object-contain transition-opacity duration-500">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center">
+                    <span class="text-gray-300 text-xs uppercase tracking-widest">Sem Imagem</span>
+                </div>
+                {% endif %}
+            </div>
+            {% set todas_imgs = p.get_todas_imagens() %}
+            {% if todas_imgs | length > 1 %}
+            <div class="grid grid-cols-4 gap-2 md:gap-4">
+                {% for img in todas_imgs %}
+                <button onclick="trocarImagem('{{ img }}')"
+                    class="aspect-square bg-gray-100 border border-transparent hover:border-[#3C9AAE] transition overflow-hidden focus:border-[#3C9AAE] focus:outline-none">
+                    <img src="{{ img }}" alt="{{ p.nome }} - foto {{ loop.index }}"
+                        class="w-full h-full object-contain opacity-80 hover:opacity-100 transition-opacity">
+                </button>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- INFOS DO PRODUTO -->
+        <div class="flex flex-col justify-center">
+            <!-- Badges de categoria -->
+            <div class="flex gap-2 mb-4">
+                {% if p.categoria_ref %}
+                <span
+                    class="text-[9px] uppercase tracking-[0.3em] text-[#3C9AAE] font-bold bg-[#3C9AAE]/5 px-3 py-1 rounded-full">{{
+                    p.categoria_ref.nome }}</span>
+                {% elif p.categoria %}
+                <span
+                    class="text-[9px] uppercase tracking-[0.3em] text-[#3C9AAE] font-bold bg-[#3C9AAE]/5 px-3 py-1 rounded-full">{{
+                    p.categoria }}</span>
+                {% endif %}
+                {% if p.subcategoria_ref %}
+                <span
+                    class="text-[9px] uppercase tracking-[0.3em] text-gray-400 font-bold bg-gray-100 px-3 py-1 rounded-full">{{
+                    p.subcategoria_ref.nome }}</span>
+                {% endif %}
+            </div>
+
+            <h1 class="text-4xl md:text-5xl font-serif font-black mb-6 leading-tight text-[#2B7A8F]">{{ p.nome }}</h1>
+            <div class="text-2xl font-serif font-bold text-[#3C9AAE] mb-8">R$ {{ "%.2f"|format(p.preco)|replace('.',
+                ',') }}</div>
+
+            <div class="prose prose-sm max-w-none text-[#4B5563] font-light leading-relaxed mb-10 space-y-4">
+                {% if p.descricao %}
+                <p class="text-base italic">{{ p.descricao }}</p>
+                {% endif %}
+                {% if p.descricao_longa %}
+                <p>{{ p.descricao_longa }}</p>
+                {% endif %}
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <button
+                    data-produto='{{ {"id": p.id, "nome": p.nome, "preco": p.preco, "img": p.get_imagem_principal(), "ml": p.link_mercadolivre or ""} | tojson }}'
+                    onclick='addToCart(JSON.parse(this.getAttribute("data-produto")))'
+                    class="jewel-shine w-full bg-[#3C9AAE] text-white text-center py-5 text-xs font-bold tracking-[0.2em] uppercase transition hover:bg-[#2B7A8F] shadow-lg shadow-[#3C9AAE]/20">
+                    Adicionar ao Carrinho
+                </button>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    {% if p.video_url %}
+                    <div class="mt-8 mb-6">
+                        <h4 class="text-[10px] uppercase tracking-widest text-[#3C9AAE] font-bold mb-3 border-b border-gray-100 pb-2">
+                            Vídeo do Produto
+                        </h4>
+                        <div class="aspect-video w-full rounded-xl overflow-hidden shadow-sm bg-gray-50">
+                            {% if 'youtube.com' in p.video_url or 'youtu.be' in p.video_url %}
+                                <iframe class="w-full h-full" src="{{ p.video_url | replace('watch?v=', 'embed/') | replace('youtu.be/', 'youtube.com/embed/') }}" 
+                                    title="YouTube video player" frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                                </iframe>
+                            {% else %}
+                                <video controls class="w-full h-full">
+                                    <source src="{{ p.video_url }}" type="video/mp4">
+                                    Seu navegador não suporta vídeos.
+                                </video>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if p.whatsapp %}
+                    <a href="{{ p.whatsapp }}" target="_blank" rel="noopener"
+                        class="jewel-shine flex-1 bg-[#25D366] text-white text-center py-4 text-[10px] font-bold tracking-[0.2em] uppercase transition hover:bg-[#128C7E]">
+                        Comprar via WhatsApp
+                    </a>
+                    {% endif %}
+                    {% if p.link_mercadolivre %}
+                    <a href="{{ p.link_mercadolivre }}" target="_blank" rel="noopener"
+                        class="jewel-shine flex-1 border border-[#2B7A8F] text-[#2B7A8F] text-center py-4 text-[10px] font-bold tracking-[0.2em] uppercase transition hover:bg-[#2B7A8F] hover:text-white">
+                        Mercado Livre
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function trocarImagem(src) {
+        const mainImg = document.getElementById('main-img');
+        if (mainImg) {
+            mainImg.style.opacity = '0';
+            setTimeout(() => {
+                mainImg.src = src;
+                mainImg.style.opacity = '1';
+            }, 250);
+        }
+    }
+</script>
+{% endblock %}

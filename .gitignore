@@ -1,0 +1,26 @@
+# Banco de dados SQLite (será criado automaticamente no servidor)
+instance/
+*.db
+*.sqlite3
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Arquivos temporários
+/tmp/
+*.log

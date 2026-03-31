@@ -1,0 +1,281 @@
+/* 
+    Damas Acessórios - Sistema de Design Centralizado
+    Estilos globais, animações e componentes premium.
+*/
+
+/* Base Styling */
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #FCFCFC;
+    color: #1F2937;
+    -webkit-font-smoothing: antialiased;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-family: 'Playfair Display', serif;
+}
+
+.font-sans {
+    font-family: 'Montserrat', sans-serif;
+}
+
+button,
+.upper-case-btn,
+a[class*='bg-gradient'],
+a[class*='border-white'] {
+    font-family: 'Playfair Display', serif !important;
+}
+
+/* Animations */
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.hover-line {
+    position: relative;
+}
+
+.hover-line::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #D4AF37;
+    transition: width 0.3s ease;
+}
+
+.hover-line:hover::after {
+    width: 100%;
+}
+
+/* Jewel Shine Effect */
+.jewel-shine {
+    position: relative;
+    overflow: hidden;
+}
+
+.jewel-shine::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(to bottom right,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.1) 45%,
+            rgba(255, 255, 255, 0.45) 50%,
+            rgba(255, 255, 255, 0.1) 55%,
+            rgba(255, 255, 255, 0) 100%);
+    transform: rotate(45deg);
+    transition: all 0.3s;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.jewel-shine:hover::after {
+    animation: shine 1.2s ease-out;
+    opacity: 1;
+}
+
+@keyframes shine {
+    0% {
+        top: -150%;
+        left: -150%;
+    }
+
+    100% {
+        top: 50%;
+        left: 50%;
+    }
+}
+
+/* Logo Pulse */
+@keyframes logo-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 rgba(60, 154, 174, 0);
+    }
+
+    50% {
+        box-shadow: 0 0 15px rgba(60, 154, 174, 0.4);
+    }
+}
+
+.logo-shape {
+    animation: logo-pulse 4s infinite ease-in-out;
+}
+
+.nav-link {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-link:hover {
+    color: #3C9AAE;
+    background-color: rgba(60, 154, 174, 0.08);
+    backdrop-filter: blur(8px);
+}
+
+/* Header & Special Backgrounds */
+.diamond-header {
+    background:
+        linear-gradient(115deg, rgba(60, 154, 174, 0.45), rgba(43, 122, 143, 0.4)),
+        linear-gradient(245deg, rgba(255, 255, 255, 0.05) 0%, transparent 70%),
+        linear-gradient(180deg, rgba(60, 154, 174, 0.2) 0%, rgba(43, 122, 143, 0.3) 100%);
+    position: relative;
+}
+
+.text-glow {
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.diamond-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(30deg, rgba(255, 255, 255, 0.1) 12%, transparent 12.5%, transparent 87%, rgba(255, 255, 255, 0.1) 87.5%, rgba(255, 255, 255, 0.1)),
+        linear-gradient(150deg, rgba(255, 255, 255, 0.1) 12%, transparent 12.5%, transparent 87%, rgba(255, 255, 255, 0.1) 87.5%, rgba(255, 255, 255, 0.1)),
+        linear-gradient(30deg, rgba(255, 255, 255, 0.1) 12%, transparent 12.5%, transparent 87%, rgba(255, 255, 255, 0.1) 87.5%, rgba(255, 255, 255, 0.1)),
+        linear-gradient(150deg, rgba(255, 255, 255, 0.1) 12%, transparent 12.5%, transparent 87%, rgba(255, 255, 255, 0.1) 87.5%, rgba(255, 255, 255, 0.1)),
+        linear-gradient(60deg, rgba(255, 255, 255, 0.05) 25%, transparent 25.5%, transparent 75%, rgba(255, 255, 255, 0.05) 75.5%, rgba(255, 255, 255, 0.05)),
+        linear-gradient(60deg, rgba(255, 255, 255, 0.05) 25%, transparent 25.5%, transparent 75%, rgba(255, 255, 255, 0.05) 75.5%, rgba(255, 255, 255, 0.05));
+    background-size: 80px 140px;
+    background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
+    opacity: 0.1;
+    pointer-events: none;
+}
+
+/* Cart Drawer & Components */
+.cart-drawer {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 100%;
+    max-width: 400px;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    z-index: 100;
+    transition: right 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.cart-drawer.open {
+    right: 0;
+}
+
+.cart-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(43, 122, 143, 0.1);
+    backdrop-filter: blur(4px);
+    z-index: 90;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s;
+}
+
+.cart-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #3C9AAE;
+    color: white;
+    font-size: 9px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* ===================== MOBILE RESPONSIVENESS ===================== */
+@media (max-width: 640px) {
+
+    /* Cart drawer: largura total em telas pequenas */
+    .cart-drawer {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    /* Checkout modal: sem margem lateral em telas pequenas */
+    .checkout-modal-content {
+        margin: 0 !important;
+        border-radius: 1.5rem 1.5rem 0 0 !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+
+    #checkout-modal {
+        align-items: flex-end !important;
+    }
+
+    /* Cards de produto: ajustes de texto */
+    .luxury-card h3 {
+        font-size: 0.8rem;
+    }
+
+    .luxury-card .product-price {
+        font-size: 0.85rem;
+    }
+
+    /* Vitrine: menos padding */
+    #vitrine main {
+        padding-top: 2.5rem;
+        padding-bottom: 2.5rem;
+    }
+
+    /* Footer: menos gap */
+    footer .grid {
+        gap: 2rem;
+    }
+
+    /* Botões de ação no hero: largura total */
+    .hero-cta-group {
+        width: 100%;
+    }
+
+    /* Touch targets mínimo 44px */
+    button,
+    a[class*="py-3"],
+    a[class*="py-4"] {
+        min-height: 44px;
+    }
+}

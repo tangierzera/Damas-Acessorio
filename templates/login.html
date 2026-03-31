@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso Restrito | Damas Acessórios</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Montserrat', sans-serif; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .luxury-input {
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .luxury-input:focus {
+            background: #fff;
+            border-color: #3C9AAE;
+            box-shadow: 0 0 0 4px rgba(60, 154, 174, 0.1);
+            outline: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-[#2B7A8F] via-[#3C9AAE] to-[#2B7A8F] flex items-center justify-center px-4">
+
+    <!-- Fundo decorativo -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="w-full max-w-sm animate-in relative z-10">
+        <!-- Card -->
+        <div class="glass-card rounded-3xl p-8 shadow-2xl shadow-[#2B7A8F]/30">
+
+            <!-- Logo -->
+            <div class="flex flex-col items-center mb-8">
+                <div class="bg-[#3C9AAE] p-3 rounded-2xl shadow-lg shadow-[#3C9AAE]/30 mb-4">
+                    <img src="/static/logo_transparente.png" alt="Damas Acessórios" class="h-10">
+                </div>
+                <h1 class="text-2xl font-serif font-bold text-[#2B7A8F] mb-1">Acesso Restrito</h1>
+                <p class="text-[10px] text-gray-400 uppercase tracking-[0.3em] font-semibold">Painel Administrativo</p>
+            </div>
+
+            <!-- Erro -->
+            {% if erro %}
+            <div class="bg-red-50 border border-red-100 rounded-xl px-4 py-3 mb-6 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-red-400 flex-shrink-0">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>
+                </svg>
+                <p class="text-xs text-red-500 font-medium">{{ erro }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Formulário -->
+            <form method="POST" action="/login" class="space-y-4">
+                <div>
+                    <label class="block text-[9px] uppercase font-bold tracking-[0.25em] text-[#3C9AAE] mb-2">Usuário</label>
+                    <input
+                        type="text"
+                        name="usuario"
+                        placeholder="Digite seu usuário"
+                        class="luxury-input w-full px-4 py-3 rounded-xl text-sm text-[#2B7A8F] font-medium"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+                <div>
+                    <label class="block text-[9px] uppercase font-bold tracking-[0.25em] text-[#3C9AAE] mb-2">Senha</label>
+                    <input
+                        type="password"
+                        name="senha"
+                        placeholder="••••••••"
+                        class="luxury-input w-full px-4 py-3 rounded-xl text-sm text-[#2B7A8F] font-medium"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    class="w-full bg-[#3C9AAE] text-white py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-[#2B7A8F] transition-all duration-300 mt-2 shadow-lg shadow-[#3C9AAE]/30"
+                >
+                    Entrar
+                </button>
+            </form>
+
+            <!-- Voltar -->
+            <div class="mt-6 text-center">
+                <a href="/" class="text-[9px] text-gray-300 hover:text-[#3C9AAE] transition-colors uppercase tracking-widest font-bold">
+                    ← Voltar para a loja
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
