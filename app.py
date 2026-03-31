@@ -14,7 +14,14 @@ app = Flask(__name__)
 # --- CONFIGURAÇÕES ---
 app.secret_key = os.environ.get('SECRET_KEY', 'chave_super_secreta_damas_123')
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'instance', 'loja.db')
+
+# CRITICAL PARA O RENDER: Cria a pasta 'instance' se ela não existir, 
+# caso contrário o banco de dados não consegue ser aberto/criado.
+instance_path = os.path.join(basedir, 'instance')
+if not os.path.exists(instance_path):
+    os.makedirs(instance_path)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(instance_path, 'loja.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
