@@ -11,24 +11,22 @@ import time
 
 app = Flask(__name__)
 
-# --- CONFIGURAÇÕES ---
-app.secret_key = os.environ.get('SECRET_KEY', 'chave_super_secreta_damas_123')
-basedir = os.path.abspath(os.path.dirname(__file__))
-
-# CRITICAL PARA O RENDER: Cria a pasta 'instance' se ela não existir, 
-# caso contrário o banco de dados não consegue ser aberto/criado.
-instance_path = os.path.join(basedir, 'instance')
-if not os.path.exists(instance_path):
-    os.makedirs(instance_path)
-
-# Prioriza o Banco de Dados do Vercel se disponível, caso contrário usa SQLite local
+# Configuração do Banco de Dados
 database_url = os.environ.get('POSTGRES_URL') or os.environ.get('DATABASE_URL')
+
 if database_url:
-    # O SQLAlchemy 1.4+ exige 'postgresql://' (o Vercel às vezes gera 'postgres://')
+    # Ajuste para SQLAlchemy 1.4+
     if database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql://", 1)
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 else:
+    # Só tenta criar a pasta 'instance' se estivermos usando SQLite localmente
+    instance_path = os.path.join(basedir, 'instance')
+    if not os.path.exists(instance_path):
+        try:
+            os.makedirs(instance_path)
+        except:
+            pass # Ignora se não conseguir criar (ex: ambiente Vercel sem Postgres ainda)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(instance_path, 'loja.db')
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
