@@ -19,11 +19,9 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 database_url = os.environ.get('POSTGRES_URL') or os.environ.get('DATABASE_URL')
 
 if database_url:
-    # O pg8000 (driver mais estável para Vercel) exige o prefixo postgresql+pg8000://
+    # O psycopg2-binary (driver padrão) usa o prefixo postgresql://
     if database_url.startswith("postgres://"):
-        database_url = database_url.replace("postgres://", "postgresql+pg8000://", 1)
-    elif database_url.startswith("postgresql://"):
-        database_url = database_url.replace("postgresql://", "postgresql+pg8000://", 1)
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 else:
     # Só tenta criar a pasta 'instance' se estivermos usando SQLite localmente
@@ -159,8 +157,8 @@ def get_ml_access_token():
 
 
 
-with app.app_context():
-    db.create_all()
+# (A criação das tabelas foi movida para o final do arquivo para maior segurança)
+pass
 
 
 # ============================================================
