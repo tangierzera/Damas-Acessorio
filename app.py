@@ -21,7 +21,16 @@ instance_path = os.path.join(basedir, 'instance')
 if not os.path.exists(instance_path):
     os.makedirs(instance_path)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(instance_path, 'loja.db')
+# Prioriza o Banco de Dados do Vercel se disponível, caso contrário usa SQLite local
+database_url = os.environ.get('POSTGRES_URL') or os.environ.get('DATABASE_URL')
+if database_url:
+    # O SQLAlchemy 1.4+ exige 'postgresql://' (o Vercel às vezes gera 'postgres://')
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(instance_path, 'loja.db')
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
