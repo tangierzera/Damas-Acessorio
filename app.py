@@ -19,9 +19,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 database_url = os.environ.get('POSTGRES_URL') or os.environ.get('DATABASE_URL')
 
 if database_url:
-    # Ajuste para SQLAlchemy 1.4+
+    # O pg8000 (driver mais estável para Vercel) exige o prefixo postgresql+pg8000://
     if database_url.startswith("postgres://"):
-        database_url = database_url.replace("postgres://", "postgresql://", 1)
+        database_url = database_url.replace("postgres://", "postgresql+pg8000://", 1)
+    elif database_url.startswith("postgresql://"):
+        database_url = database_url.replace("postgresql://", "postgresql+pg8000://", 1)
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 else:
     # Só tenta criar a pasta 'instance' se estivermos usando SQLite localmente
@@ -734,8 +736,11 @@ def auto_seed():
 
 
 with app.app_context():
-    db.create_all()
-    auto_seed()
+    try:
+        db.create_all()
+        auto_seed()
+    except Exception as e:
+        print(f"Aviso: O banco de dados ainda não está pronto ou houve um erro: {e}")
 
 if __name__ == '__main__':
     debug_mode = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
