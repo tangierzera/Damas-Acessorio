@@ -11,6 +11,10 @@ import time
 
 app = Flask(__name__)
 
+# Configurações Gerais
+app.secret_key = os.environ.get('SECRET_KEY', 'chave_super_secreta_damas_123')
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 # Configuração do Banco de Dados
 database_url = os.environ.get('POSTGRES_URL') or os.environ.get('DATABASE_URL')
 
